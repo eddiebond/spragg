@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { getAvailableSeats, getTotalTickets, getSoldCount } from "@/lib/tickets";
+import {
+  getAvailableSeats,
+  getTotalTickets,
+  getSoldCount,
+} from "@/lib/tickets";
 
 export async function GET() {
   try {
@@ -8,7 +12,18 @@ export async function GET() {
       getTotalTickets(),
       getSoldCount(),
     ]);
-    return NextResponse.json({ available, total, sold });
+
+    // Not initialized yet
+    if (total === null) {
+      return NextResponse.json({ 
+        available: null, 
+        total: null, 
+        sold: 0,
+        initialized: false 
+      });
+    }
+
+    return NextResponse.json({ available, total, sold, initialized: true });
   } catch (error) {
     console.error("Error getting availability:", error);
     return NextResponse.json(

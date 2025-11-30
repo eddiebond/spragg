@@ -6,6 +6,7 @@ export default function TicketForm() {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState<number | null>(null);
+  const [initialized, setInitialized] = useState<boolean | null>(null);
 
   const ticketPrice = 7.5; // Price per ticket in GBP
 
@@ -16,6 +17,7 @@ export default function TicketForm() {
         const res = await fetch("/api/tickets/availability");
         const data = await res.json();
         setAvailable(data.available);
+        setInitialized(data.initialized);
       } catch (error) {
         console.error("Failed to fetch availability:", error);
       }
@@ -32,6 +34,16 @@ export default function TicketForm() {
 
   const maxQuantity = available !== null ? Math.min(10, available) : 10;
   const soldOut = available === 0;
+
+  // Not initialized - tickets not set up yet
+  if (initialized === false) {
+    return (
+      <div style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc" }}>
+        <h2>Tickets</h2>
+        <p>Tickets are not yet available. Check back soon!</p>
+      </div>
+    );
+  }
 
   const handleCheckout = async () => {
     setLoading(true);
