@@ -2,7 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getAvailableSeats, reserveTickets } from "@/lib/tickets";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const isDev = process.env.NODE_ENV === "development";
+const stripeSecretKey = isDev
+  ? process.env.STRIPE_SECRET_TEST_KEY
+  : process.env.STRIPE_SECRET_KEY;
+
+if (!stripeSecretKey) {
+  throw new Error(
+    isDev
+      ? "Missing STRIPE_SECRET_TEST_KEY for development"
+      : "Missing STRIPE_SECRET_KEY for production"
+  );
+}
+
+const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2025-11-17.clover",
 });
 
@@ -11,7 +24,7 @@ export async function POST(request: NextRequest) {
     const { quantity } = await request.json();
 
     // Check availability
-    const available = await getAvailableSeats();
+    const available = (await getAvailableSeats()) ?? 0;
     if (quantity > available) {
       return NextResponse.json(
         { error: `Only ${available} tickets available` },
@@ -38,7 +51,7 @@ export async function POST(request: NextRequest) {
               name: "Event Ticket",
               description: "Midlife High Five Deep Dive",
             },
-            unit_amount: 750, // £7.50 in pence
+            unit_amount: 350, // £3.50 in pence
           },
           quantity: quantity,
         },

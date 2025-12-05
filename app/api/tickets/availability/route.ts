@@ -15,11 +15,11 @@ export async function GET() {
 
     // Not initialized yet
     if (total === null) {
-      return NextResponse.json({ 
-        available: null, 
-        total: null, 
+      return NextResponse.json({
+        available: null,
+        total: null,
         sold: 0,
-        initialized: false 
+        initialized: false,
       });
     }
 
