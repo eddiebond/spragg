@@ -41,6 +41,10 @@ const MidlifeHighFiveTicket = ({
         <Text style={text}>Hi {name},</Text>
 
         <Text style={text}>
+          Thank you for your purchase. I&apos;m excited to see you at the show.
+        </Text>
+
+        <Text style={text}>
           Please find your QR code with your ticket
           {ticketQuantity > 1 ? "s" : ""} below.
         </Text>
@@ -61,29 +65,18 @@ const MidlifeHighFiveTicket = ({
         </Container>
 
         <Container style={{ marginTop: "30px", textAlign: "left" }}>
-          <Heading style={h2}>📅 When?</Heading>
+          <Heading style={h2}>When is this again?</Heading>
           <Text style={{ ...text, marginBottom: "16px" }}>
             Friday, 23rd January 2026 at 8:00 PM
             <br />
             Doors open at 7:30 PM
           </Text>
 
-          <Heading style={h2}>📍 Where?</Heading>
+          <Heading style={h2}>And where?</Heading>
           <Text style={{ ...text, marginBottom: "16px" }}>
             The Holloway, St Benedicts Street, Norwich
           </Text>
         </Container>
-
-        <Text
-          style={{
-            ...text,
-            marginTop: "30px",
-            fontSize: "14px",
-            color: "#666",
-          }}
-        >
-          See you there!
-        </Text>
       </Container>
     </Body>
   </Html>

@@ -29,7 +29,7 @@ export default function RootLayout({
             backgroundImage: "url('/paperbg.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.5,
+            opacity: 0.8,
           }}
         />
         {children}

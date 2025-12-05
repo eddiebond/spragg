@@ -160,11 +160,11 @@ export default function TicketForm() {
 
   if (checkoutStep === "success") {
     return (
-      <div className="mt-8 p-4 border border-gray-300 rounded">
-        <h2>Thank you!</h2>
+      <div className="mt-8 p-4 border border-gray-800 bg-white/50">
+        <h2>Success!</h2>
         <p>
-          Your payment was successful. You will receive a confirmation email
-          shortly.
+          Your payment was successful. You will receive a confirmation email and
+          your tickets shortly.
         </p>
       </div>
     );
@@ -251,7 +251,7 @@ export default function TicketForm() {
                     )
                   )
                 }
-                className="w-12 text-center p-2 text-base"
+                className="w-20 text-center p-2 text-base"
                 aria-describedby="price-display"
               />
               <button
