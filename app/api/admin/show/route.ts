@@ -3,10 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-const DEFAULT_EVENT_ID = 2;
+const DEFAULT_EVENT_ID = 3;
 
 // Helper to get sold count from customer_event
 async function getSoldCountForEvent(eventId: number): Promise<number> {
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     console.error("Admin error:", error);
     return NextResponse.json(
       { error: "Failed to update show data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -142,7 +142,7 @@ export async function GET() {
     console.error("Admin error:", error);
     return NextResponse.json(
       { error: "Failed to get show data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

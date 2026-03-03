@@ -2,10 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-const DEFAULT_EVENT_ID = 2;
+const DEFAULT_EVENT_ID = 3;
 
 export interface ShowData {
   id: number;

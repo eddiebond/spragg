@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getAvailableSeats, reserveTickets } from "@/lib/tickets";
+import { PRICE_PER_TICKET } from "@/lib/config";
 
 const isDev = process.env.NODE_ENV === "development";
 const stripeSecretKey = isDev
@@ -11,7 +12,7 @@ if (!stripeSecretKey) {
   throw new Error(
     isDev
       ? "Missing STRIPE_SECRET_TEST_KEY for development"
-      : "Missing STRIPE_SECRET_KEY for production"
+      : "Missing STRIPE_SECRET_KEY for production",
   );
 }
 
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (quantity > available) {
       return NextResponse.json(
         { error: `Only ${available} tickets available` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
     if (!reserved) {
       return NextResponse.json(
         { error: "Could not reserve tickets" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
               name: "Event Ticket",
               description: "Midlife High Five Deep Dive",
             },
-            unit_amount: 350, // £3.50 in pence
+            unit_amount: PRICE_PER_TICKET,
           },
           quantity: quantity,
         },
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
     console.error("Stripe error:", error);
     return NextResponse.json(
       { error: "Failed to create checkout session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

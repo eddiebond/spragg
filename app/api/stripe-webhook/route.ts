@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { DEFAULT_EVENT_ID, PRICE_PER_TICKET } from "@/lib/config";
 import {
   uniqueNamesGenerator,
   adjectives,
@@ -23,17 +24,15 @@ if (!stripeSecretKey) {
   throw new Error(
     isDev
       ? "Missing STRIPE_SECRET_TEST_KEY for development"
-      : "Missing STRIPE_SECRET_KEY for production"
+      : "Missing STRIPE_SECRET_KEY for production",
   );
 }
 
 const stripe = new Stripe(stripeSecretKey);
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
-
-const DEFAULT_EVENT_ID = 2;
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -42,7 +41,7 @@ export async function POST(req: NextRequest) {
   if (!signature || !webhookSecret) {
     return NextResponse.json(
       { error: "Missing signature or webhook secret" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -146,7 +145,7 @@ export async function POST(req: NextRequest) {
           customer_id: customerId,
           event_id: eventId,
           tickets_sold: ticketQuantity,
-          price_per_ticket: 350, // £3.50 in pence
+          price_per_ticket: PRICE_PER_TICKET,
           tickets_code: ticketCode,
           stripe_payment_intent_id: paymentIntentId,
         });

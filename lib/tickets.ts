@@ -1,11 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
+import { DEFAULT_EVENT_ID } from "./config";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
-
-const DEFAULT_EVENT_ID = 2;
 
 // Helper to get the event with id 2
 async function getEvent() {

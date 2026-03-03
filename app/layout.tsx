@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Schoolbell } from "next/font/google";
 import "./globals.css";
-
-const schoolbell = Schoolbell({
-  variable: "--font-schoolbell",
-  subsets: ["latin"],
-  weight: "400",
-});
 
 export const metadata: Metadata = {
   title: "Midlife Highfive Deepdive",
-  description: "23rd January 2026 - The Holloway, Norwich",
+  description: "9th April 2026 - The Holloway, Norwich",
 };
 
 export default function RootLayout({
@@ -20,16 +13,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${schoolbell.variable}  antialiased relative min-h-screen`}
-      >
+      <body className={`antialiased relative min-h-vh `}>
         <div
-          className="fixed inset-0 -z-10"
+          className="fixed inset-0 max-w-4xl -z-10  w-full m-auto"
           style={{
-            backgroundImage: "url('/paperbg.jpg')",
+            backgroundImage: "url('/fuckubg.jpeg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.8,
+            opacity: 0.7,
           }}
         />
         {children}

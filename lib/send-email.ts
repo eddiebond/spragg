@@ -9,7 +9,7 @@ export async function sendTicketEmail(
   name: string,
   email: string,
   ticketCode: string,
-  ticketQuantity: number
+  ticketQuantity: number,
 ) {
   // Generate QR code as a buffer
   const qrCodeBuffer = await QRCode.toBuffer(ticketCode);
@@ -24,10 +24,10 @@ export async function sendTicketEmail(
       ticketCode,
       ticketQuantity,
       qrCodeContentId,
-    })
+    }),
   );
 
-  const subject = `Your Midlife High Five Deep Dive ticket${ticketQuantity > 1 ? "s" : ""} 🎟️`;
+  const subject = `Your Midlife High Five Deep Dive ticket${ticketQuantity > 1 ? "s" : ""}`;
 
   // Create a transporter object using SMTP
   const transporter = nodemailer.createTransport({

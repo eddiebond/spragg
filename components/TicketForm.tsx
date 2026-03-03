@@ -8,6 +8,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { Button } from "@/components/ui/button";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -19,7 +20,7 @@ if (!stripePublishableKey) {
   console.error(
     isDev
       ? "Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_TEST_KEY for development"
-      : "Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY for production"
+      : "Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY for production",
   );
 }
 
@@ -83,11 +84,15 @@ function CheckoutForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4"
+      style={{ fontFamily: "Helvetica, sans-serif" }}
+    >
       <PaymentElement />
       {error && <p className="text-red-600 mt-2">{error}</p>}
       <div className="flex gap-2 mt-4">
-        <button
+        <Button
           type="submit"
           disabled={!stripe || loading}
           className="flex-1 px-6 py-3"
@@ -95,15 +100,16 @@ function CheckoutForm({
           {loading
             ? "Processing..."
             : `Pay £${(ticketPrice * quantity).toFixed(2)}`}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-3 bg-gray-200 text-black hover:bg-gray-300"
+          variant="secondary"
+          className="px-4 py-3"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -124,7 +130,7 @@ export default function TicketForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const ticketPrice = 3.5;
+  const ticketPrice = 4;
 
   useEffect(() => {
     async function fetchAvailability() {
@@ -151,7 +157,10 @@ export default function TicketForm() {
 
   if (initialized === false) {
     return (
-      <div className="mt-8 p-4 border border-gray-300 rounded">
+      <div
+        className="mt-8 p-4 border border-gray-300 rounded"
+        style={{ fontFamily: "Helvetica, sans-serif" }}
+      >
         <h2>Tickets</h2>
         <p>Tickets are not yet available. Check back soon!</p>
       </div>
@@ -160,7 +169,10 @@ export default function TicketForm() {
 
   if (checkoutStep === "success") {
     return (
-      <div className="mt-8 p-4 border border-gray-800 bg-white/50">
+      <div
+        className="mt-8 p-4 border border-gray-800 bg-white/50"
+        style={{ fontFamily: "Helvetica, sans-serif" }}
+      >
         <h2>Success!</h2>
         <p>
           Your payment was successful. You will receive a confirmation email and
@@ -208,7 +220,10 @@ export default function TicketForm() {
   };
 
   return (
-    <div className="mt-8 p-4 border border-gray-800 bg-white/50">
+    <div
+      className="mt-8 p-4 border border-white bg-black/90 text-white"
+      style={{ fontFamily: "Helvetica, sans-serif" }}
+    >
       <h2>Get Tickets Here</h2>
 
       {available !== null && (
@@ -228,41 +243,41 @@ export default function TicketForm() {
               Number of tickets:
             </label>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={quantity <= 1}
                 aria-label="Decrease quantity"
+                variant="outline"
                 className="px-4 py-2 text-xl"
               >
                 −
-              </button>
-              <input
+              </Button>
+              <select
                 id="quantity"
-                type="number"
-                min="1"
-                max={maxQuantity}
                 value={quantity}
-                onChange={(e) =>
-                  setQuantity(
-                    Math.max(
-                      1,
-                      Math.min(maxQuantity, parseInt(e.target.value) || 1)
-                    )
-                  )
-                }
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="w-20 text-center p-2 text-base"
                 aria-describedby="price-display"
-              />
-              <button
+              >
+                {Array.from({ length: maxQuantity }, (_, i) => i + 1).map(
+                  (num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ),
+                )}
+              </select>
+              <Button
                 type="button"
                 onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
                 disabled={quantity >= maxQuantity}
                 aria-label="Increase quantity"
+                variant="outline"
                 className="px-4 py-2 text-xl"
               >
                 +
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -270,13 +285,13 @@ export default function TicketForm() {
             <strong>Total: £{(ticketPrice * quantity).toFixed(2)}</strong>
           </p>
 
-          <button
+          <Button
             onClick={handleProceedToDetails}
             disabled={available === null}
             className="mt-4 px-6 py-3 text-base"
           >
             Continue
-          </button>
+          </Button>
         </>
       )}
 
@@ -320,20 +335,21 @@ export default function TicketForm() {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <button
+            <Button
               onClick={handleProceedToCheckout}
               disabled={loadingIntent || !name.trim() || !email.trim()}
               className="flex-1 px-6 py-3 text-base"
             >
               {loadingIntent ? "Loading..." : "Proceed to Payment"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setCheckoutStep("select")}
-              className="px-4 py-3 bg-gray-200 text-black hover:bg-gray-300"
+              variant="secondary"
+              className="px-4 py-3"
             >
               Back
-            </button>
+            </Button>
           </div>
         </>
       )}

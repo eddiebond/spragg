@@ -56,10 +56,22 @@ const MidlifeHighFiveTicket = ({
               alt="QR Code"
               width="128"
               height="128"
-              style={{ display: "block", margin: "0 auto" }}
+              style={{
+                display: "block",
+                margin: "0 auto",
+                border: "2px solid #dddddd",
+              }}
             />
           )}
-          <Text style={{ ...text, fontFamily: "monospace", fontSize: "16px" }}>
+          <Text
+            style={{
+              ...text,
+              fontFamily: "monospace",
+              fontSize: "16px",
+              color: "#00ffff",
+              fontWeight: "700",
+            }}
+          >
             {ticketCode}
           </Text>
         </Container>
@@ -67,7 +79,7 @@ const MidlifeHighFiveTicket = ({
         <Container style={{ marginTop: "30px", textAlign: "left" }}>
           <Heading style={h2}>When is this again?</Heading>
           <Text style={{ ...text, marginBottom: "16px" }}>
-            Friday, 23rd January 2026 at 8:00 PM
+            Thursday, 9th April 2026 at 8:00 PM
             <br />
             Doors open at 7:30 PM
           </Text>
@@ -83,36 +95,38 @@ const MidlifeHighFiveTicket = ({
 );
 
 const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+  backgroundColor: "#000000",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 const container = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#0a0a0a",
   margin: "0 auto",
   padding: "40px 20px",
   maxWidth: "600px",
+  border: "2px solid #ff00ff",
 };
 
 const h1 = {
-  color: "#1a1a1a",
+  color: "#ffff00",
   fontSize: "24px",
-  fontWeight: "600",
+  fontWeight: "700",
   lineHeight: "1.3",
   margin: "0 0 20px",
+  textTransform: "uppercase" as const,
 };
 
 const h2 = {
-  color: "#1a1a1a",
+  color: "#ff00ff",
   fontSize: "18px",
-  fontWeight: "600",
+  fontWeight: "700",
   lineHeight: "1.3",
   margin: "0 0 8px",
+  textTransform: "uppercase" as const,
 };
 
 const text = {
-  color: "#4a4a4a",
+  color: "#ffffff",
   fontSize: "16px",
   lineHeight: "1.6",
   margin: "0 0 16px",
