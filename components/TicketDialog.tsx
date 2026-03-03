@@ -175,15 +175,17 @@ export default function TicketDialog() {
     let hasError = false;
 
     if (!name.trim()) {
-      setNameError("Please enter your name");
+      setNameError("No you idiot! Enter a name!");
       hasError = true;
     }
 
     if (!email.trim()) {
-      setEmailError("Please enter your email");
+      setEmailError(
+        "No you idiot! Enter an email address! Otherwise how will we send you your tickets?!",
+      );
       hasError = true;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setEmailError("Please enter a valid email address");
+      setEmailError("No you idiot! Enter a REAL email address!");
       hasError = true;
     }
 
@@ -220,11 +222,21 @@ export default function TicketDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="default" size="lg" className="w-full max-w-md">
-          Get Tickets Here
-        </Button>
-      </DialogTrigger>
+      {soldOut ? (
+        <div className="w-full max-w-md text-center py-4 px-6 bg-muted border-2 border-border">
+          <span className="text-xl font-bold uppercase">SOLD OUT</span>
+        </div>
+      ) : (
+        <DialogTrigger asChild>
+          <Button
+            variant="default"
+            size="lg"
+            className="w-full max-w-md text-xl"
+          >
+            Get Tickets Here
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Midlife Highfive Deepdive</DialogTitle>
