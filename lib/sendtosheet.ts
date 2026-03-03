@@ -10,12 +10,12 @@ function getSupabaseClient(): SupabaseClient {
   }
   if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY is not defined in environment variables"
+      "SUPABASE_SERVICE_ROLE_KEY is not defined in environment variables",
     );
   }
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   );
 }
 
@@ -184,7 +184,7 @@ function getSheetId(): number {
 
 async function clearSheetEverything(
   spreadsheetId: string,
-  sheetId: number = 0
+  sheetId: number = 0,
 ) {
   const sheets = getSheetsClient();
   // Clear values
@@ -241,8 +241,8 @@ export async function sendToSheet(spreadsheetId: string) {
   const sheetId = getSheetId();
 
   // Fetch data from Supabase
-  const { data: midlifehighfivedeepdive, error } = await supabase
-    .from("midlifehighfivedeepdive")
+  const { data: midlifehighfivedeepdiveapril9, error } = await supabase
+    .from("midlifehighfivedeepdiveapril9")
     .select("*")
     .order("created_at", { ascending: true });
 
@@ -251,19 +251,19 @@ export async function sendToSheet(spreadsheetId: string) {
   }
 
   // Prepare rows for Google Sheets
-  const rows = midlifehighfivedeepdive.map((ticket) => [
+  const rows = midlifehighfivedeepdiveapril9.map((ticket) => [
     ticket.customer_name,
     ticket.tickets_sold,
     ticket.tickets_code,
     formatInTimeZone(
       new Date(ticket.created_at),
       "Europe/London",
-      "yyyy-MM-dd HH:mm"
+      "yyyy-MM-dd HH:mm",
     ),
   ]);
-  const totalTicketsSold = midlifehighfivedeepdive.reduce(
+  const totalTicketsSold = midlifehighfivedeepdiveapril9.reduce(
     (sum, ticket) => sum + ticket.tickets_sold,
-    0
+    0,
   );
   rows.push(["Total", totalTicketsSold, "", ""]);
 
@@ -301,7 +301,7 @@ export async function sendToSheet(spreadsheetId: string) {
   } catch (error: unknown) {
     console.error(
       "Error writing to Google Sheets:",
-      error instanceof Error ? error.message : "Unknown error"
+      error instanceof Error ? error.message : "Unknown error",
     );
     throw new Error("Failed to write data to Google Sheets.");
   }
