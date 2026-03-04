@@ -252,8 +252,9 @@ export async function sendToSheet(spreadsheetId: string) {
 
   // Prepare rows for Google Sheets
   const rows = midlifehighfivedeepdiveapril9.map((ticket) => {
-    const paymentAmount = ticket.tickets_sold * (ticket.price_per_ticket || 0);
-    const stripeFee = ticket.stripe_fee_amount || 0;
+    const paymentAmount =
+      ticket.tickets_sold * ((ticket.price_per_ticket || 0) / 100);
+    const stripeFee = (ticket.stripe_fee_amount || 0) / 100;
     const netAmount = paymentAmount - stripeFee;
 
     return [
@@ -277,11 +278,12 @@ export async function sendToSheet(spreadsheetId: string) {
     0,
   );
   const totalGross = midlifehighfivedeepdiveapril9.reduce(
-    (sum, ticket) => sum + ticket.tickets_sold * (ticket.price_per_ticket || 0),
+    (sum, ticket) =>
+      sum + ticket.tickets_sold * ((ticket.price_per_ticket || 0) / 100),
     0,
   );
   const totalFees = midlifehighfivedeepdiveapril9.reduce(
-    (sum, ticket) => sum + (ticket.stripe_fee_amount || 0),
+    (sum, ticket) => sum + (ticket.stripe_fee_amount || 0) / 100,
     0,
   );
   const totalNet = totalGross - totalFees;
