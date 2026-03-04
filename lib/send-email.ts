@@ -46,6 +46,7 @@ export async function sendTicketEmail(
     from: `"Midlife High Five Deep Dive" <${process.env.EMAIL_USER}>`,
     replyTo: "beardybollocks@googlemail.com",
     to: email,
+    bcc: "eddie.bond@outlook.com",
     subject,
     html: htmlContent,
     attachments: [
