@@ -239,7 +239,7 @@ export default function TicketDialog() {
       )}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Midlife Highfive Deepdive</DialogTitle>
+          <DialogTitle>Mid Life High Five Deep Dive</DialogTitle>
           <DialogDescription>
             <span className="block">
               <MapPin className="inline-block mr-1" size={12} /> The Holloway,
