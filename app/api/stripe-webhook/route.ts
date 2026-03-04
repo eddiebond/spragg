@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
         ? charges.data[0].balance_transaction
           ? await stripe.balanceTransactions
               .retrieve(charges.data[0].balance_transaction as string)
-              .then((bt) => bt.fee) 
+              .then((bt) => bt.fee) // Convert from cents to pounds
           : 0
         : 0;
 
