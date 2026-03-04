@@ -138,6 +138,22 @@ export async function POST(req: NextRequest) {
         length: 2,
       });
 
+      // Calculate Stripe fee from the payment intent
+      // Stripe fee is typically amount_received - amount (net vs gross)
+      // Or we can use the charges array to get exact fee
+      const charges = await stripe.charges.list({
+        payment_intent: paymentIntentId,
+        limit: 1,
+      });
+
+      const stripeFee = charges.data[0]
+        ? charges.data[0].balance_transaction
+          ? await stripe.balanceTransactions
+              .retrieve(charges.data[0].balance_transaction as string)
+              .then((bt) => bt.fee / 100) // Convert from cents to pounds
+          : 0
+        : 0;
+
       // Create customer_event record
       const { error: eventError } = await supabase
         .from("customer_event")
@@ -148,6 +164,7 @@ export async function POST(req: NextRequest) {
           price_per_ticket: PRICE_PER_TICKET,
           tickets_code: ticketCode,
           stripe_payment_intent_id: paymentIntentId,
+          stripe_fee_amount: stripeFee,
         });
 
       if (eventError) {

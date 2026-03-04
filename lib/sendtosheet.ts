@@ -52,7 +52,7 @@ function formatHeaderRow(sheetId: number) {
           startRowIndex: 0,
           endRowIndex: 1,
           startColumnIndex: 0,
-          endColumnIndex: 4,
+          endColumnIndex: 8,
         },
         cell: {
           userEnteredFormat: {
@@ -70,7 +70,7 @@ function formatHeaderRow(sheetId: number) {
           startRowIndex: 0,
           endRowIndex: 1,
           startColumnIndex: 0,
-          endColumnIndex: 4,
+          endColumnIndex: 8,
         },
         bottom: {
           style: "SOLID",
@@ -91,7 +91,7 @@ function formatTotalRow(sheetId: number, totalRowIndex: number) {
           startRowIndex: totalRowIndex,
           endRowIndex: totalRowIndex + 1,
           startColumnIndex: 0,
-          endColumnIndex: 4,
+          endColumnIndex: 8,
         },
         cell: {
           userEnteredFormat: {
@@ -108,7 +108,7 @@ function formatTotalRow(sheetId: number, totalRowIndex: number) {
           startRowIndex: totalRowIndex,
           endRowIndex: totalRowIndex + 1,
           startColumnIndex: 0,
-          endColumnIndex: 4,
+          endColumnIndex: 8,
         },
         top: {
           style: "SOLID",
@@ -128,7 +128,7 @@ function setOverflowCell(sheetId: number, rowCount: number) {
         startRowIndex: 0,
         endRowIndex: rowCount,
         startColumnIndex: 0,
-        endColumnIndex: 4,
+        endColumnIndex: 8,
       },
       cell: {
         userEnteredFormat: {
@@ -251,21 +251,51 @@ export async function sendToSheet(spreadsheetId: string) {
   }
 
   // Prepare rows for Google Sheets
-  const rows = midlifehighfivedeepdiveapril9.map((ticket) => [
-    ticket.customer_name,
-    ticket.tickets_sold,
-    ticket.tickets_code,
-    formatInTimeZone(
-      new Date(ticket.created_at),
-      "Europe/London",
-      "yyyy-MM-dd HH:mm",
-    ),
-  ]);
+  const rows = midlifehighfivedeepdiveapril9.map((ticket) => {
+    const paymentAmount = ticket.tickets_sold * (ticket.price_per_ticket || 0);
+    const stripeFee = ticket.stripe_fee_amount || 0;
+    const netAmount = paymentAmount - stripeFee;
+
+    return [
+      ticket.customer_name,
+      ticket.customer_email,
+      ticket.tickets_sold,
+      ticket.tickets_code,
+      formatInTimeZone(
+        new Date(ticket.created_at),
+        "Europe/London",
+        "yyyy-MM-dd HH:mm",
+      ),
+      `£${paymentAmount.toFixed(2)}`,
+      `£${stripeFee.toFixed(2)}`,
+      `£${netAmount.toFixed(2)}`,
+    ];
+  });
+
   const totalTicketsSold = midlifehighfivedeepdiveapril9.reduce(
     (sum, ticket) => sum + ticket.tickets_sold,
     0,
   );
-  rows.push(["Total", totalTicketsSold, "", ""]);
+  const totalGross = midlifehighfivedeepdiveapril9.reduce(
+    (sum, ticket) => sum + ticket.tickets_sold * (ticket.price_per_ticket || 0),
+    0,
+  );
+  const totalFees = midlifehighfivedeepdiveapril9.reduce(
+    (sum, ticket) => sum + (ticket.stripe_fee_amount || 0),
+    0,
+  );
+  const totalNet = totalGross - totalFees;
+
+  rows.push([
+    "Total",
+    "",
+    totalTicketsSold,
+    "",
+    "",
+    `£${totalGross.toFixed(2)}`,
+    `£${totalFees.toFixed(2)}`,
+    `£${totalNet.toFixed(2)}`,
+  ]);
 
   try {
     // Clear everything in the sheet
@@ -278,7 +308,16 @@ export async function sendToSheet(spreadsheetId: string) {
       valueInputOption: "RAW",
       requestBody: {
         values: [
-          ["Customer Name", "Quantity", "Tickets Code", "Date and Time"],
+          [
+            "Customer Name",
+            "Email",
+            "Quantity",
+            "Tickets Code",
+            "Date and Time",
+            "Payment Amount",
+            "Stripe Processing Fees",
+            "Net Amount",
+          ],
           ...rows,
         ],
       },
@@ -289,7 +328,7 @@ export async function sendToSheet(spreadsheetId: string) {
       ...formatHeaderRow(sheetId),
       ...formatTotalRow(sheetId, rows.length),
       setOverflowCell(sheetId, rows.length + 1),
-      autoResizeColumns(sheetId, 0, 4),
+      autoResizeColumns(sheetId, 0, 8),
     ];
 
     await sheets.spreadsheets.batchUpdate({
