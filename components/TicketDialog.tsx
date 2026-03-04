@@ -45,12 +45,14 @@ function CheckoutForm({
   onSuccess,
   onCancel,
   paymentIntentId,
+  email,
 }: {
   quantity: number;
   ticketPrice: number;
   onSuccess: () => void;
   onCancel: () => void;
   paymentIntentId: string;
+  email: string;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -96,7 +98,15 @@ function CheckoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4">
-      <PaymentElement />
+      <PaymentElement
+        options={{
+          defaultValues: {
+            billingDetails: {
+              email: email,
+            },
+          },
+        }}
+      />
       {error && <p className="text-red-600 mt-2">{error}</p>}
       <div className="flex gap-2 mt-4">
         <Button
@@ -393,7 +403,56 @@ export default function TicketDialog() {
             stripe={stripePromise}
             options={{
               clientSecret,
-              appearance: { theme: "stripe" },
+              appearance: {
+                theme: "night",
+                variables: {
+                  fontFamily: "Helvetica, sans-serif",
+                  fontSizeBase: "14px",
+                  borderRadius: "0px",
+                  colorPrimary: "#f882cd",
+                  colorBackground: "#0d0d0d",
+                  colorText: "#ffffff",
+                  colorDanger: "#df2020",
+                  spacingUnit: "4px",
+                },
+                rules: {
+                  ".Input": {
+                    border: "2px solid #666666",
+                    backgroundColor: "#0d0d0d",
+                    color: "#ffffff",
+                    padding: "9px 12px",
+                  },
+                  ".Input:focus": {
+                    border: "2px solid #f882cd",
+                    outline: "none",
+                  },
+                  ".Input:disabled": {
+                    opacity: "0.5",
+                  },
+                  ".Label": {
+                    color: "#ffffff",
+                    fontSize: "14px",
+                    fontWeight: "normal",
+                    marginBottom: "4px",
+                  },
+                  ".Tab": {
+                    border: "2px solid #666666",
+                    backgroundColor: "#0d0d0d",
+                    padding: "9px 12px",
+                  },
+                  ".Tab:hover": {
+                    backgroundColor: "#1a1a1a",
+                  },
+                  ".Tab--selected": {
+                    border: "2px solid #f882cd",
+                    backgroundColor: "#0d0d0d",
+                  },
+                  ".Block": {
+                    backgroundColor: "#0d0d0d",
+                    border: "none",
+                  },
+                },
+              },
             }}
           >
             <p className="mt-2">
@@ -410,6 +469,7 @@ export default function TicketDialog() {
                 setPaymentIntentId(null);
               }}
               paymentIntentId={paymentIntentId}
+              email={email.trim()}
             />
           </Elements>
         )}
