@@ -259,7 +259,7 @@ export async function sendToSheet(spreadsheetId: string) {
 
     return [
       ticket.customer_name,
-      ticket.customer_email,
+      ticket.email,
       ticket.tickets_sold,
       ticket.tickets_code,
       formatInTimeZone(
