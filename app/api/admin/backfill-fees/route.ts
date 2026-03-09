@@ -19,7 +19,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export async function POST() {
+async function runBackfill() {
   // Fetch all records missing a fee
   const { data: records, error: fetchError } = await supabase
     .from("customer_event")
@@ -47,27 +47,35 @@ export async function POST() {
 
   for (const record of records) {
     try {
-      // Get the charge for this payment intent
-      const charges = await stripe.charges.list({
-        payment_intent: record.stripe_payment_intent_id,
-        limit: 1,
-      });
+      // Retrieve the payment intent and check it succeeded
+      const pi = await stripe.paymentIntents.retrieve(
+        record.stripe_payment_intent_id,
+        { expand: ["latest_charge.balance_transaction"] },
+      );
 
-      const charge = charges.data[0];
+      if (pi.status !== "succeeded") {
+        results.push({
+          id: record.id,
+          paymentIntentId: record.stripe_payment_intent_id,
+          fee: null,
+          error: `Payment intent status: ${pi.status} (skipped)`,
+        });
+        continue;
+      }
+
+      const charge = pi.latest_charge as Stripe.Charge | null;
 
       if (!charge?.balance_transaction) {
         results.push({
           id: record.id,
           paymentIntentId: record.stripe_payment_intent_id,
           fee: null,
-          error: "No balance_transaction yet",
+          error: "No balance_transaction on charge",
         });
         continue;
       }
 
-      const bt = await stripe.balanceTransactions.retrieve(
-        charge.balance_transaction as string,
-      );
+      const bt = charge.balance_transaction as Stripe.BalanceTransaction;
       const fee = bt.fee;
 
       const { error: updateError } = await supabase
@@ -115,4 +123,12 @@ export async function POST() {
   }
 
   return NextResponse.json({ updated, total: records.length, results });
+}
+
+export async function GET() {
+  return runBackfill();
+}
+
+export async function POST() {
+  return runBackfill();
 }
