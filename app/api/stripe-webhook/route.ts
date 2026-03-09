@@ -55,12 +55,19 @@ export async function POST(req: NextRequest) {
   }
 
   // Handle the event
-  if (event.type === "payment_intent.succeeded") {
-    const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    const paymentIntentId = paymentIntent.id;
+  if (event.type === "charge.succeeded") {
+    const charge = event.data.object as Stripe.Charge;
+    const paymentIntentId = charge.payment_intent as string;
+
+    if (!paymentIntentId) {
+      return NextResponse.json({ received: true });
+    }
+
+    // Fetch the payment intent to get metadata
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     const metadata = paymentIntent.metadata;
 
-    console.log("Payment succeeded:", paymentIntentId);
+    console.log("Charge succeeded:", paymentIntentId);
 
     if (!metadata?.email || !metadata?.name || !metadata?.quantity) {
       console.error("Missing required metadata");
@@ -138,21 +145,15 @@ export async function POST(req: NextRequest) {
         length: 2,
       });
 
-      // Calculate Stripe fee from the payment intent
-      // Stripe fee is typically amount_received - amount (net vs gross)
-      // Or we can use the charges array to get exact fee
-      const charges = await stripe.charges.list({
-        payment_intent: paymentIntentId,
-        limit: 1,
-      });
-
-      const stripeFee = charges.data[0]
-        ? charges.data[0].balance_transaction
-          ? await stripe.balanceTransactions
-              .retrieve(charges.data[0].balance_transaction as string)
-              .then((bt) => bt.fee) // Convert from cents to pounds
-          : 0
-        : 0;
+      // Get Stripe fee from the balance transaction on the charge
+      // charge.succeeded fires after balance_transaction is created, so this is reliable
+      let stripeFee = 0;
+      if (charge.balance_transaction) {
+        const bt = await stripe.balanceTransactions.retrieve(
+          charge.balance_transaction as string,
+        );
+        stripeFee = bt.fee;
+      }
 
       // Create customer_event record
       const { error: eventError } = await supabase
